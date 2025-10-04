@@ -4,257 +4,301 @@
 ![Python](https://img.shields.io/badge/python-3.7+-blue.svg)
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 
-A Python library and command-line tool for generating professional puzzle books including Sudoku and Maze puzzles. Create print-ready PDF books with customizable difficulty levels, professional layouts, and high-quality formatting.
+**Smart Book Maker** is a powerful Python library and command-line tool for generating professional puzzle books. Create print-ready PDF books with customizable difficulty levels, adaptive puzzle counts, and professional layouts.
 
-## 🌟 Features
+## � Features
 
-- **Multiple Puzzle Types**: Generate Sudoku and Maze puzzles
-- **Difficulty Progression**: 5 difficulty levels from beginner to expert
-- **Professional PDF Output**: Print-ready books with proper formatting
-- **Customizable Generation**: Configure puzzle count, output directories, and difficulty
-- **Clean Organization**: Separate folders for puzzles, solutions, and assets
-- **Command Line Interface**: Easy-to-use CLI for batch operations
-- **Extensible Architecture**: Well-structured codebase for adding new puzzle types
-
-## 📚 Supported Puzzle Types
-
-### Sudoku Puzzles
-- **Very Easy (1-25)**: 45-50 given clues - Perfect for beginners
-- **Easy (26-55)**: 40-45 given clues - Building confidence  
-- **Medium (56-90)**: 32-40 given clues - Testing skills
-- **Hard (91-125)**: 28-32 given clues - Challenging puzzles
-- **Expert (126-160)**: 22-28 given clues - Master level
-
-### Maze Puzzles
-- **Very Easy (5x5)**: Small mazes perfect for beginners
-- **Easy (12x12)**: Slightly larger with more path options
-- **Medium (20x20)**: Moderate complexity requiring strategy
-- **Hard (35x35)**: Complex mazes with many dead ends
-- **Very Hard (50x50)**: Massive labyrinths for experts
+- **🧩 Multiple Puzzle Types**: Generate Sudoku and Maze puzzles
+- **📈 Adaptive Difficulty**: Automatically distributes puzzles across 5 difficulty levels
+- **📖 Custom Books**: Create books with custom titles, puzzle counts, and themes  
+- **🖨️ Print-Ready PDFs**: Professional layouts suitable for publishing
+- **⚡ Easy CLI**: Simple command-line interface for batch operations
+- **🔧 Extensible**: Well-structured codebase for adding new puzzle types
+- **🎨 Customizable**: Configure book titles, difficulty distributions, and output
 
 ## 🚀 Quick Start
 
 ### Installation
 
+1. **Clone the repository**:
 ```bash
-# Clone the repository
 git clone https://github.com/TheUnknown550/Smart-Book-Maker.git
 cd Smart-Book-Maker
+```
 
-# Install dependencies
+2. **Install dependencies**:
+```bash
 pip install -r requirements.txt
+```
 
-# Install the package (optional)
-pip install -e .
+3. **Test the installation**:
+```bash
+python test_setup.py
 ```
 
 ### Basic Usage
 
-#### Generate Sudoku Puzzles and Book
+#### Generate a Complete Sudoku Book (Recommended)
 ```bash
-# Generate 160 Sudoku puzzles and create a complete book
-python -m smart_book_maker.cli all sudoku --count 160
+# Generate 100 Sudoku puzzles and create a complete book
+python -m smart_book_maker.cli all sudoku --count 100
 
-# Or use the installed command (if you installed the package)
-smart-book-maker all sudoku --count 160
+# Create a custom book with your own title
+python -m smart_book_maker.cli all sudoku --count 50 --title "My Sudoku Collection" --subtitle "Custom Puzzles for Brain Training"
 ```
 
-#### Generate Maze Puzzles and Book
+#### Generate a Complete Maze Book
 ```bash
-# Generate 160 Maze puzzles and create a complete book
-python -m smart_book_maker.cli all maze --count 160
+# Generate 80 Maze puzzles and create a complete book  
+python -m smart_book_maker.cli all maze --count 80
 ```
 
 #### Individual Operations
 ```bash
-# Generate only puzzles
-python -m smart_book_maker.cli generate sudoku --count 100
-python -m smart_book_maker.cli generate maze --count 100
+# Generate only puzzles (no book)
+python -m smart_book_maker.cli generate sudoku --count 50
+python -m smart_book_maker.cli generate maze --count 30
 
-# Create only the book (requires existing puzzles)
-python -m smart_book_maker.cli create sudoku-book
+# Create book from existing puzzles
+python -m smart_book_maker.cli create sudoku-book --total-puzzles 50
 python -m smart_book_maker.cli create maze-book
 ```
 
-### Using as a Library
+## 📖 Detailed Usage
+
+### Command Line Interface
+
+The CLI supports three main commands: `generate`, `create`, and `all`.
+
+#### Generate Puzzles Only
+```bash
+# Generate Sudoku puzzles
+python -m smart_book_maker.cli generate sudoku --count 100 --output-dir my_puzzles
+
+# Generate Maze puzzles  
+python -m smart_book_maker.cli generate maze --count 50 --output-dir my_mazes
+```
+
+#### Create Books Only
+```bash
+# Create Sudoku book with custom settings
+python -m smart_book_maker.cli create sudoku-book \\
+    --output-dir my_puzzles \\
+    --filename "Custom_Sudoku_Book.pdf" \\
+    --title "Advanced Sudoku" \\
+    --subtitle "Challenge Your Mind" \\
+    --total-puzzles 100
+
+# Create Maze book
+python -m smart_book_maker.cli create maze-book \\
+    --output-dir my_mazes \\
+    --filename "My_Maze_Adventure.pdf"
+```
+
+#### All-in-One (Generate + Create Book)
+```bash
+# Complete Sudoku workflow with custom book
+python -m smart_book_maker.cli all sudoku \\
+    --count 75 \\
+    --title "Brain Gym Sudoku" \\
+    --subtitle "75 Challenging Puzzles" \\
+    --filename "Brain_Gym_Sudoku.pdf"
+
+# Complete Maze workflow
+python -m smart_book_maker.cli all maze \\
+    --count 60 \\
+    --filename "Maze_Master_Challenge.pdf"
+```
+
+### Using as a Python Library
 
 ```python
 from smart_book_maker.generators.sudoku import SudokuGenerator
 from smart_book_maker.pdf.sudoku_book import SudokuBookPDF
 
-# Generate a single puzzle
+# Generate individual puzzles
 generator = SudokuGenerator()
-puzzle, solution = generator.generate_puzzle(difficulty=50)
+puzzle, solution = generator.generate_puzzle(difficulty=25, total_puzzles=100)
 
-# Create a book
-book = SudokuBookPDF("my_sudoku_book.pdf")
+# Create a custom book
+book = SudokuBookPDF(
+    output_filename="My_Custom_Book.pdf",
+    book_title="Daily Sudoku", 
+    book_subtitle="Perfect for Coffee Breaks",
+    total_puzzles=50
+)
 book.create_book("output/puzzles", "output/solutions")
 ```
 
-## 📁 Project Structure
+## 📂 Output Structure
+
+After running the tool, your files will be organized as follows:
 
 ```
-Smart-Book-Maker/
-├── src/smart_book_maker/          # Main package
-│   ├── generators/                # Puzzle generators
-│   │   ├── sudoku.py             # Sudoku puzzle generation
-│   │   └── maze.py               # Maze puzzle generation
-│   ├── pdf/                      # PDF book creators
-│   │   ├── sudoku_book.py        # Sudoku book PDF generator
-│   │   └── maze_book.py          # Maze book PDF generator
-│   ├── utils/                    # Utility functions
-│   │   └── file_utils.py         # File and directory helpers
-│   └── cli.py                    # Command line interface
-├── examples/                     # Example usage scripts
-├── tests/                        # Unit tests
-├── output/                       # Generated content (created at runtime)
-│   ├── puzzles/                  # Puzzle images
-│   ├── solutions/               # Solution images
-│   ├── mazes/                   # Maze text files
-│   ├── mazes_png/               # Maze images
-│   └── books/                   # Generated PDF books
-├── assets/                       # Static assets (images, fonts, etc.)
-├── requirements.txt              # Python dependencies
-├── setup.py                     # Package setup
-├── LICENSE                      # MIT License
-├── CONTRIBUTING.md              # Contribution guidelines
-└── README.md                    # This file
+output/
+├── puzzles/          # Sudoku puzzle images (.png)
+├── solutions/        # Sudoku solution images (.png)
+├── sudokus/          # Sudoku text files (.txt)
+├── mazes/            # Maze text files (.txt)
+├── mazes_png/        # Maze images (.png)
+└── books/            # Generated PDF books
+    ├── Complete_Sudoku_Puzzle_Book.pdf
+    └── Complete_Maze_Puzzle_Book.pdf
 ```
 
-## 🛠️ Development
+## 🎚️ Adaptive Difficulty System
 
-### Setting up Development Environment
+Smart Book Maker automatically distributes puzzles across 5 difficulty levels based on your total puzzle count:
 
-```bash
-# Clone and enter directory
-git clone https://github.com/TheUnknown550/Smart-Book-Maker.git
-cd Smart-Book-Maker
+### Sudoku Difficulties
+- **Very Easy**: 45-50 clues (great for beginners)
+- **Easy**: 40-45 clues (building confidence)
+- **Medium**: 32-40 clues (testing skills) 
+- **Hard**: 28-32 clues (challenging)
+- **Expert**: 22-28 clues (master level)
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+### Maze Sizes
+- **Very Easy**: 5×5 grids
+- **Easy**: 12×12 grids
+- **Medium**: 20×20 grids
+- **Hard**: 35×35 grids
+- **Very Hard**: 50×50 grids
 
-# Install dependencies including development tools
-pip install -r requirements.txt
-pip install -e ".[dev]"
-```
+**Example**: If you generate 50 puzzles, you'll get 10 puzzles of each difficulty level. If you generate 100 puzzles, you'll get 20 of each level.
 
-### Running Tests
+## �️ Advanced Configuration
 
-```bash
-# Run all tests
-python -m pytest
-
-# Run with coverage
-python -m pytest --cov=smart_book_maker
-
-# Run specific test file
-python -m pytest tests/test_sudoku_generator.py
-```
-
-### Code Formatting
-
-```bash
-# Format code with black
-black src/ tests/ examples/
-
-# Sort imports
-isort src/ tests/ examples/
-
-# Type checking
-mypy src/
-```
-
-## 📖 API Documentation
-
-### SudokuGenerator
+### Custom Difficulty Distribution
 
 ```python
+# Create a book with specific puzzle counts
 from smart_book_maker.generators.sudoku import SudokuGenerator
 
 generator = SudokuGenerator()
 
-# Generate a complete puzzle and solution
-puzzle, solution = generator.generate_puzzle(difficulty=50)
-
-# Save as text file
-generator.save_puzzle_text(puzzle, solution, "puzzle.txt")
-
-# Save as images
-generator.save_puzzle_image(puzzle, "puzzle.png")
-generator.save_solution_image(solution, puzzle, "solution.png")
+# Generate puzzles with custom total count
+for i in range(1, 51):  # 50 puzzles total
+    puzzle, solution = generator.generate_puzzle(i, total_puzzles=50)
+    difficulty = generator.get_difficulty_name(i, total_puzzles=50)
+    print(f"Puzzle {i}: {difficulty}")
 ```
 
-### MazeGenerator
+### Multiple Books from Same Puzzles
 
-```python
-from smart_book_maker.generators.maze import MazeGenerator
+```bash
+# Generate puzzles once
+python -m smart_book_maker.cli generate sudoku --count 100
 
-generator = MazeGenerator()
-
-# Generate a maze
-maze, width, height, cell_size = generator.generate_puzzle(level=50)
-
-# Save as text and image
-generator.save_maze_text(maze, "maze.txt")
-generator.save_maze_image(maze, "maze.png", cell_size)
+# Create multiple books with different titles
+python -m smart_book_maker.cli create sudoku-book --title "Sudoku Volume 1" --filename "Volume1.pdf"
+python -m smart_book_maker.cli create sudoku-book --title "Sudoku Volume 2" --filename "Volume2.pdf"
 ```
 
-### Creating Books
+## 🧪 Development & Testing
 
-```python
-from smart_book_maker.pdf.sudoku_book import SudokuBookPDF
+### Run Tests
+```bash
+# Run the setup test
+python test_setup.py
 
-# Create a Sudoku book
-book = SudokuBookPDF("my_book.pdf")
-book.create_book("puzzles_dir", "solutions_dir")
+# Run unit tests (if you have pytest installed)
+python -m pytest tests/
 ```
 
-## 🎯 Use Cases
+### Code Structure
+```
+src/smart_book_maker/
+├── generators/       # Puzzle generation logic
+├── pdf/             # PDF book creation
+├── utils/           # Helper functions
+└── cli.py           # Command-line interface
+```
 
-- **Educational Material**: Create puzzle books for schools and educational programs
-- **Print-on-Demand Publishing**: Generate books for platforms like Amazon KDP
-- **Personal Use**: Create custom puzzle books for family and friends  
-- **Commercial Use**: Generate content for puzzle magazines and publications
-- **Brain Training Apps**: Use as a backend for puzzle generation in applications
+## ❗ Troubleshooting
+
+### Common Issues
+
+**1. "No module named 'reportlab'" error**
+```bash
+pip install reportlab pillow
+```
+
+**2. "Permission denied" when creating PDFs**
+- Make sure no PDF files are open in another program
+- Check that you have write permissions to the output directory
+
+**3. Images not generating properly**
+- Ensure you have the Pillow library installed: `pip install pillow`
+- Try running with a smaller puzzle count first
+
+**4. CLI not working**
+```bash
+# Make sure you're in the project directory
+cd Smart-Book-Maker
+
+# Try running the module directly
+python -m smart_book_maker.cli --help
+```
+
+## 📋 Requirements
+
+- **Python**: 3.7 or higher
+- **Dependencies**: `pillow` and `reportlab` (see requirements.txt)
+- **Memory**: 512MB+ RAM recommended for large books
+- **Storage**: 1-100MB per book depending on puzzle count
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ### Ways to Contribute
-
 - Add new puzzle types (Word Search, Crosswords, etc.)
-- Improve existing generators with better algorithms
-- Add new PDF layouts and themes
+- Improve puzzle generation algorithms
+- Create new PDF layouts and themes
 - Write tests and improve documentation
 - Fix bugs and optimize performance
-- Create example projects and tutorials
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+## 🎉 Examples
 
-- **GitHub Repository**: [https://github.com/TheUnknown550/Smart-Book-Maker](https://github.com/TheUnknown550/Smart-Book-Maker)
-- **Issues**: [https://github.com/TheUnknown550/Smart-Book-Maker/issues](https://github.com/TheUnknown550/Smart-Book-Maker/issues)
-- **Documentation**: Coming soon!
+### Create a Mini Sudoku Book
+```bash
+python -m smart_book_maker.cli all sudoku \\
+    --count 25 \\
+    --title "Sudoku Starter Pack" \\
+    --subtitle "Perfect for Beginners" \\
+    --filename "Starter_Sudoku.pdf"
+```
 
-## 🏆 Acknowledgments
+### Create a Mega Maze Collection
+```bash
+python -m smart_book_maker.cli all maze \\
+    --count 200 \\
+    --filename "Ultimate_Maze_Challenge.pdf"
+```
 
-- Built with [ReportLab](https://www.reportlab.com/) for PDF generation
-- Image processing with [Pillow](https://python-pillow.org/)
-- Inspired by the need for high-quality, customizable puzzle book generation
+### Generate Puzzles for Multiple Books
+```bash
+# Generate a large set of puzzles
+python -m smart_book_maker.cli generate sudoku --count 300
 
-## 📊 Requirements
+# Create themed books from the same puzzles
+python -m smart_book_maker.cli create sudoku-book \\
+    --title "Morning Sudoku" \\
+    --subtitle "Start Your Day Right" \\
+    --total-puzzles 100 \\
+    --filename "Morning_Sudoku.pdf"
 
-- **Python**: 3.7 or higher
-- **Dependencies**: See [requirements.txt](requirements.txt)
-- **System**: Cross-platform (Windows, macOS, Linux)
-- **Memory**: Recommended 512MB+ RAM for large book generation
-- **Storage**: Variable based on output size (typically 1-100MB per book)
+python -m smart_book_maker.cli create sudoku-book \\
+    --title "Evening Sudoku" \\
+    --subtitle "Relax and Unwind" \\
+    --total-puzzles 100 \\
+    --filename "Evening_Sudoku.pdf"
+```
 
 ---
 
-**Created with ❤️ by the Smart Book Maker Contributors**
+**Happy Puzzle Making! 🧩📚**

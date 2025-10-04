@@ -17,14 +17,23 @@ import uuid
 class SudokuBookPDF:
     """A class for creating professional Sudoku puzzle books in PDF format."""
     
-    def __init__(self, output_filename: str = "Complete_Sudoku_Puzzle_Book.pdf"):
+    def __init__(self, output_filename: str = "Complete_Sudoku_Puzzle_Book.pdf", 
+                 book_title: str = "Sudoku Journey", 
+                 book_subtitle: str = "Brain-Busting Challenges to Sharpen Your Logic",
+                 total_puzzles: int = 160):
         """
         Initialize the Sudoku book PDF generator.
         
         Args:
             output_filename: Name of the output PDF file
+            book_title: Main title of the book
+            book_subtitle: Subtitle of the book
+            total_puzzles: Total number of puzzles in the book
         """
         self.output_filename = output_filename
+        self.book_title = book_title
+        self.book_subtitle = book_subtitle
+        self.total_puzzles = total_puzzles
         self.page_width, self.page_height = 8.5 * inch, 11 * inch
         self.bleed = 0.125 * inch
         self.content_width = self.page_width - 2 * self.bleed
@@ -33,18 +42,32 @@ class SudokuBookPDF:
         
     def get_difficulty_info(self) -> List[Dict[str, Any]]:
         """
-        Get information about difficulty levels.
+        Get information about difficulty levels based on total puzzles.
         
         Returns:
             List of dictionaries containing difficulty information
         """
-        return [
-            {"name": "Very Easy", "range": "1-25", "start": 1, "end": 25},
-            {"name": "Easy", "range": "26-55", "start": 26, "end": 55},
-            {"name": "Medium", "range": "56-90", "start": 56, "end": 90},
-            {"name": "Hard", "range": "91-125", "start": 91, "end": 125},
-            {"name": "Expert", "range": "126-160", "start": 126, "end": 160}
-        ]
+        puzzles_per_level = self.total_puzzles // 5
+        remainder = self.total_puzzles % 5
+        
+        difficulty_info = []
+        current = 1
+        
+        levels = ["Very Easy", "Easy", "Medium", "Hard", "Expert"]
+        for i, level in enumerate(levels):
+            # Add extra puzzles to later levels if there's a remainder
+            count = puzzles_per_level + (1 if i >= (5 - remainder) else 0)
+            end = current + count - 1
+            
+            difficulty_info.append({
+                "name": level,
+                "range": f"{current}-{end}",
+                "start": current,
+                "end": end
+            })
+            current += count
+            
+        return difficulty_info
     
     def add_image(self, c: canvas.Canvas, img_path: str, x: float, y: float, 
                   w: float, h: float) -> None:
@@ -85,13 +108,13 @@ class SudokuBookPDF:
         """Create the title page of the book."""
         c.setFont('Helvetica-Bold', 28)
         c.drawCentredString(self.page_width / 2, self.page_height / 2 + 80, 
-                           'Sudoku Journey:')
+                           self.book_title)
         c.setFont('Helvetica-Bold', 22)
         c.drawCentredString(self.page_width / 2, self.page_height / 2 + 40, 
-                           'Brain-Busting Challenges to Sharpen Your Logic')
+                           self.book_subtitle)
         c.setFont('Helvetica', 18)
         c.drawCentredString(self.page_width / 2, self.page_height / 2, 
-                           'From Very Easy to Expert Level')
+                           f'{self.total_puzzles} Puzzles - All Difficulty Levels')
         c.setFont('Helvetica', 16)
         c.drawCentredString(self.page_width / 2, self.page_height / 2 - 40, 
                            'By Smart Book Maker')

@@ -138,23 +138,29 @@ class MazeGenerator:
         
         img.save(filename)
     
-    def get_difficulty_params(self, level: int) -> Tuple[int, int]:
+    def get_difficulty_params(self, level: int, total_puzzles: int = 160) -> Tuple[int, int]:
         """
-        Get maze dimensions based on difficulty level.
+        Get maze dimensions based on difficulty level and total puzzles.
         
         Args:
-            level: Difficulty level (1-160)
+            level: Difficulty level (1-total_puzzles)
+            total_puzzles: Total number of puzzles
             
         Returns:
             Tuple of (width, height) for the maze
         """
-        if level <= 25:
+        # Calculate ranges dynamically
+        puzzles_per_level = total_puzzles // 5
+        remainder = total_puzzles % 5
+        
+        # Determine which difficulty level this puzzle belongs to
+        if level <= puzzles_per_level:
             return 5, 5  # Very easy
-        elif level <= 55:
+        elif level <= puzzles_per_level * 2:
             return 12, 12  # Easy
-        elif level <= 90:
+        elif level <= puzzles_per_level * 3:
             return 20, 20  # Medium
-        elif level <= 125:
+        elif level <= puzzles_per_level * 4:
             return 35, 35  # Hard
         else:
             return 50, 50  # Very hard
@@ -180,39 +186,42 @@ class MazeGenerator:
         else:
             return 7
     
-    def generate_puzzle(self, level: int) -> Tuple[List[List[str]], int, int, int]:
+    def generate_puzzle(self, level: int, total_puzzles: int = 160) -> Tuple[List[List[str]], int, int, int]:
         """
         Generate a complete maze puzzle for the given level.
         
         Args:
-            level: Difficulty level (1-160)
+            level: Difficulty level (1-total_puzzles)
+            total_puzzles: Total number of puzzles
             
         Returns:
             Tuple of (maze, width, height, cell_size)
         """
-        width, height = self.get_difficulty_params(level)
+        width, height = self.get_difficulty_params(level, total_puzzles)
         maze = self.generate_maze(width, height)
         cell_size = self.get_cell_size(width)
         return maze, width, height, cell_size
 
-    @staticmethod
-    def get_difficulty_name(level: int) -> str:
+    def get_difficulty_name(self, level: int, total_puzzles: int = 160) -> str:
         """
-        Get difficulty name based on level.
+        Get difficulty name based on level and total puzzles.
         
         Args:
-            level: Puzzle number (1-160)
+            level: Puzzle number (1-total_puzzles)
+            total_puzzles: Total number of puzzles
             
         Returns:
             Difficulty level name
         """
-        if level <= 25:
+        puzzles_per_level = total_puzzles // 5
+        
+        if level <= puzzles_per_level:
             return "Very Easy"
-        elif level <= 55:
+        elif level <= puzzles_per_level * 2:
             return "Easy"
-        elif level <= 90:
+        elif level <= puzzles_per_level * 3:
             return "Medium"
-        elif level <= 125:
+        elif level <= puzzles_per_level * 4:
             return "Hard"
         else:
             return "Very Hard"

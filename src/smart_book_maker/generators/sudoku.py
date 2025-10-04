@@ -8,7 +8,7 @@ with various difficulty levels and save them as images and text files.
 import random
 import os
 import copy
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -86,34 +86,36 @@ class SudokuGenerator:
         self.solve_sudoku(self.grid)
         return copy.deepcopy(self.grid)
     
-    def remove_numbers(self, grid: List[List[int]], difficulty: int) -> List[List[int]]:
+    def remove_numbers(self, grid: List[List[int]], difficulty: int, total_puzzles: int = 160) -> List[List[int]]:
         """
         Remove numbers from complete grid based on difficulty level.
         
         Args:
             grid: Complete Sudoku solution
-            difficulty: Difficulty level (1-160)
+            difficulty: Difficulty level (1-total_puzzles)
+            total_puzzles: Total number of puzzles to generate
             
         Returns:
             Puzzle grid with appropriate numbers removed
         """
-        # Difficulty levels with number of clues to keep:
-        # Very Easy (1-25): 45-50 clues (remove 31-36 numbers)
-        # Easy (26-55): 40-45 clues (remove 36-41 numbers)
-        # Medium (56-90): 32-40 clues (remove 41-49 numbers)
-        # Hard (91-125): 28-32 clues (remove 49-53 numbers)
-        # Expert (126-160): 22-28 clues (remove 53-59 numbers)
+        # Calculate difficulty ranges based on total puzzles
+        ranges = self.get_difficulty_ranges(total_puzzles)
         
-        if difficulty <= 25:  # Very Easy
-            remove_count = random.randint(31, 36)
-        elif difficulty <= 55:  # Easy
-            remove_count = random.randint(36, 41)
-        elif difficulty <= 90:  # Medium
-            remove_count = random.randint(41, 49)
-        elif difficulty <= 125:  # Hard
-            remove_count = random.randint(49, 53)
-        else:  # Expert
-            remove_count = random.randint(53, 59)
+        # Determine which difficulty level this puzzle belongs to
+        difficulty_level = self._get_difficulty_level(difficulty, ranges)
+        
+        # Set clue counts based on difficulty level
+        clue_ranges = {
+            "Very Easy": (45, 50),  # remove 31-36 numbers
+            "Easy": (40, 45),       # remove 36-41 numbers
+            "Medium": (32, 40),     # remove 41-49 numbers
+            "Hard": (28, 32),       # remove 49-53 numbers
+            "Expert": (22, 28)      # remove 53-59 numbers
+        }
+        
+        min_clues, max_clues = clue_ranges[difficulty_level]
+        target_clues = random.randint(min_clues, max_clues)
+        remove_count = 81 - target_clues
         
         puzzle = copy.deepcopy(grid)
         positions = [(i, j) for i in range(9) for j in range(9)]
@@ -127,18 +129,60 @@ class SudokuGenerator:
         
         return puzzle
 
-    def generate_puzzle(self, difficulty: int) -> Tuple[List[List[int]], List[List[int]]]:
+    def get_difficulty_ranges(self, total_puzzles: int) -> Dict[str, Tuple[int, int]]:
+        """
+        Calculate difficulty ranges based on total number of puzzles.
+        
+        Args:
+            total_puzzles: Total number of puzzles
+            
+        Returns:
+            Dictionary mapping difficulty names to (start, end) ranges
+        """
+        # Distribute puzzles across 5 difficulty levels
+        puzzles_per_level = total_puzzles // 5
+        remainder = total_puzzles % 5
+        
+        ranges = {}
+        current = 1
+        
+        for i, level in enumerate(["Very Easy", "Easy", "Medium", "Hard", "Expert"]):
+            # Add extra puzzles to later levels if there's a remainder
+            count = puzzles_per_level + (1 if i >= (5 - remainder) else 0)
+            ranges[level] = (current, current + count - 1)
+            current += count
+            
+        return ranges
+    
+    def _get_difficulty_level(self, puzzle_num: int, ranges: Dict[str, Tuple[int, int]]) -> str:
+        """
+        Determine difficulty level for a given puzzle number.
+        
+        Args:
+            puzzle_num: Puzzle number
+            ranges: Difficulty ranges
+            
+        Returns:
+            Difficulty level name
+        """
+        for level, (start, end) in ranges.items():
+            if start <= puzzle_num <= end:
+                return level
+        return "Expert"  # fallback
+    
+    def generate_puzzle(self, difficulty: int, total_puzzles: int = 160) -> Tuple[List[List[int]], List[List[int]]]:
         """
         Generate a complete puzzle and solution pair.
         
         Args:
-            difficulty: Difficulty level (1-160)
+            difficulty: Difficulty level (1-total_puzzles)
+            total_puzzles: Total number of puzzles to generate
             
         Returns:
             Tuple of (puzzle, solution) grids
         """
         solution = self.generate_complete_grid()
-        puzzle = self.remove_numbers(solution, difficulty)
+        puzzle = self.remove_numbers(solution, difficulty, total_puzzles)
         return puzzle, solution
 
     def save_puzzle_text(self, puzzle: List[List[int]], solution: List[List[int]], 
@@ -284,24 +328,16 @@ class SudokuGenerator:
         
         img.save(filename)
 
-    @staticmethod
-    def get_difficulty_name(level: int) -> str:
+    def get_difficulty_name(self, level: int, total_puzzles: int = 160) -> str:
         """
-        Get difficulty name based on level.
+        Get difficulty name based on level and total puzzles.
         
         Args:
-            level: Puzzle number (1-160)
+            level: Puzzle number (1-total_puzzles)
+            total_puzzles: Total number of puzzles
             
         Returns:
             Difficulty level name
         """
-        if level <= 25:
-            return "Very Easy"
-        elif level <= 55:
-            return "Easy"
-        elif level <= 90:
-            return "Medium"
-        elif level <= 125:
-            return "Hard"
-        else:
-            return "Expert"
+        ranges = self.get_difficulty_ranges(total_puzzles)
+        return self._get_difficulty_level(level, ranges)
