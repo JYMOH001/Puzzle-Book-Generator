@@ -38,6 +38,8 @@ python test_setup.py
 
 ### Basic Usage
 
+> **💡 Quick Tip**: Use the `all` command for a complete workflow that generates puzzles AND creates a PDF book!
+
 #### Generate a Complete Sudoku Book (Recommended)
 ```bash
 # Generate 100 Sudoku puzzles and create a complete book
@@ -54,12 +56,15 @@ python -m smart_book_maker.cli all maze --count 80
 ```
 
 #### Individual Operations
+
+**⚠️ Important**: The `generate` command creates puzzle files but does NOT create a PDF book!
+
 ```bash
-# Generate only puzzles (no book)
+# Generate only puzzles (no book created)
 python -m smart_book_maker.cli generate sudoku --count 50
 python -m smart_book_maker.cli generate maze --count 30
 
-# Create book from existing puzzles
+# Create book from existing puzzles (no new puzzles generated)
 python -m smart_book_maker.cli create sudoku-book --total-puzzles 50
 python -m smart_book_maker.cli create maze-book
 ```
@@ -68,18 +73,26 @@ python -m smart_book_maker.cli create maze-book
 
 ### Command Line Interface
 
-The CLI supports three main commands: `generate`, `create`, and `all`.
+The CLI supports three main commands with different purposes:
+
+| Command | Generates Puzzles | Creates PDF Book | Use Case |
+|---------|------------------|-----------------|----------|
+| `generate` | ✅ Yes | ❌ No | Create puzzle files only |
+| `create` | ❌ No | ✅ Yes | Make PDF from existing puzzles |
+| `all` | ✅ Yes | ✅ Yes | Complete workflow (recommended) |
 
 #### Generate Puzzles Only
+**Creates puzzle/solution files but NO PDF book**
 ```bash
-# Generate Sudoku puzzles
+# Generate Sudoku puzzles (files only)
 python -m smart_book_maker.cli generate sudoku --count 100 --output-dir my_puzzles
 
-# Generate Maze puzzles  
+# Generate Maze puzzles (files only)
 python -m smart_book_maker.cli generate maze --count 50 --output-dir my_mazes
 ```
 
 #### Create Books Only
+**Creates PDF book from existing puzzle files (does NOT generate new puzzles)**
 ```bash
 # Create Sudoku book with custom settings
 python -m smart_book_maker.cli create sudoku-book \\
@@ -96,6 +109,7 @@ python -m smart_book_maker.cli create maze-book \\
 ```
 
 #### All-in-One (Generate + Create Book)
+**Generates puzzles AND creates PDF book in one command (recommended for most users)**
 ```bash
 # Complete Sudoku workflow with custom book
 python -m smart_book_maker.cli all sudoku \\
